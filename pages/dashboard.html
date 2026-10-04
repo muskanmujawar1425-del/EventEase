@@ -195,22 +195,27 @@
                 profilePhone.textContent = "Not available";
                 profileRole.textContent = "Customer";
 
-            } else {
+           } else {
 
-                console.log("Profile:", profile);
+    console.log("Profile:", profile);
 
-                userName.textContent =
-                    profile.full_name || "User";
+    if (profile.role === "admin") {
+        window.location.href = "admin.html";
+        return;
+    }
 
-                profileName.textContent =
-                    profile.full_name || "Not available";
+    userName.textContent =
+        profile.full_name || "User";
 
-                profilePhone.textContent =
-                    profile.phone || "Not available";
+    profileName.textContent =
+        profile.full_name || "Not available";
 
-                profileRole.textContent =
-                    profile.role || "Customer";
-            }
+    profilePhone.textContent =
+        profile.phone || "Not available";
+
+    profileRole.textContent =
+        profile.role || "Customer";
+}
 
 
             // Get user's bookings
@@ -255,39 +260,41 @@
                     bookingCard.className =
                         "booking-card";
 
-                    bookingCard.innerHTML =
-                        `
-                        <h3>${booking.event_type}</h3>
+                   let bookingImage = "../images/hero-event.jpg";
 
-                        <p>
-                            <strong>Date:</strong>
-                            ${booking.event_date}
-                        </p>
+if (booking.event_type === "Birthday Party") {
+    bookingImage = "../images/birthday.jpg";
+} else if (booking.event_type === "Corporate Event") {
+    bookingImage = "../images/corporate.jpg";
+} else if (booking.event_type === "College Event") {
+    bookingImage = "../images/college.jpg";
+} else if (booking.event_type === "Wedding") {
+    bookingImage = "../images/wedding.jpg";
+}
 
-                        <p>
-                            <strong>Venue:</strong>
-                            ${booking.venue || "Not specified"}
-                        </p>
+        bookingCard.innerHTML = `
+            <div class="booking-card-image">
+                <img src="${bookingImage}" alt="${booking.event_type}">
+            </div>
 
-                        <p>
-                            <strong>Guests:</strong>
-                            ${booking.guest_count || "Not specified"}
-                        </p>
+            <div class="booking-card-content">
+                <div class="booking-card-top">
+                    <h3>${booking.event_type}</h3>
+                    <span class="booking-status ${booking.status}">
+                        ${booking.status}
+                    </span>
+                </div>
 
-                        <p>
-                            <strong>Budget:</strong>
-                            ₹${booking.budget || "Not specified"}
-                        </p>
+                <p><strong>Date:</strong> ${booking.event_date}</p>
+                <p><strong>Venue:</strong> ${booking.venue || "Not specified"}</p>
+                <p><strong>Guests:</strong> ${booking.guest_count || "Not specified"}</p>
+                <p><strong>Budget:</strong> ₹${booking.budget || "Not specified"}</p>
+            </div>
+        `;
 
-                        <p>
-                            <strong>Status:</strong>
-                            ${booking.status}
-                        </p>
-                        `;
+        bookingsList.appendChild(bookingCard);
 
-                    bookingsList.appendChild(bookingCard);
-
-                });
+    });
 
             }
 
@@ -315,3 +322,6 @@
 
 </body>
 </html>
+
+
+ 

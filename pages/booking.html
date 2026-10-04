@@ -29,150 +29,121 @@
 
 
     <!-- Booking Section -->
-    <main class="auth-container">
+    <main>
+    <section class="booking-section">
 
-        <div class="auth-box">
+        <div class="booking-intro">
+            <p class="section-eyebrow">PLAN YOUR EVENT</p>
 
-            <h1>Book Your Event</h1>
+            <h1>
+                Let's make your
+                <span>event special.</span>
+            </h1>
 
-            <p class="auth-subtitle">
-                Tell us about your event and we'll take care of the rest.
+            <p>
+                Tell us a little about your event and we'll
+                help you get everything organized.
             </p>
+        </div>
 
+        <div class="booking-layout">
 
-            <form id="bookingForm">
+            <div class="booking-form-card">
 
-                <!-- Event Type -->
-                <div class="form-group">
-
-                    <label for="eventType">
-                        Event Type
-                    </label>
-
-                    <select id="eventType" required>
-
-                        <option value="">
-                            Select Event Type
-                        </option>
-
-                        <option value="Wedding">
-                            Wedding
-                        </option>
-
-                        <option value="Birthday">
-                            Birthday Party
-                        </option>
-
-                        <option value="Corporate Event">
-                            Corporate Event
-                        </option>
-
-                        <option value="Engagement">
-                            Engagement
-                        </option>
-
-                        <option value="Conference">
-                            Conference
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
-                    </select>
-
+                <div class="booking-form-header">
+                    <h2>Event Details</h2>
+                    <p>Fill in the details below to create your booking.</p>
                 </div>
+<form id="bookingForm">
 
+    <div class="form-group">
+        <label for="eventType">Event Type</label>
+        <select id="eventType" required>
+            <option value="">Select event type</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Birthday Party">Birthday Party</option>
+            <option value="Corporate Event">Corporate Event</option>
+            <option value="College Event">College Event</option>
+        </select>
+    </div>
 
-                <!-- Event Date -->
-                <div class="form-group">
+    <div class="form-group">
+        <label for="eventDate">Event Date</label>
+        <input
+            type="date"
+            id="eventDate"
+            required
+        >
+    </div>
 
-                    <label for="eventDate">
-                        Event Date
-                    </label>
+    <div class="form-group">
+        <label for="venue">Venue</label>
+        <input
+            type="text"
+            id="venue"
+            placeholder="Enter your event venue"
+            required
+        >
+    </div>
 
-                    <input
-                        type="date"
-                        id="eventDate"
-                        required
+    <div class="form-group">
+        <label for="guestCount">Number of Guests</label>
+        <input
+            type="number"
+            id="guestCount"
+            placeholder="e.g. 100"
+            min="1"
+            required
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="budget">Estimated Budget (₹)</label>
+        <input
+            type="number"
+            id="budget"
+            placeholder="e.g. 50000"
+            min="0"
+            required
+        >
+    </div>
+
+    <button type="submit">
+        Submit Booking
+    </button>
+
+    <p id="bookingMessage" class="form-message"></p>
+
+</form>
+
+            </div>
+
+            <div class="booking-side">
+
+                <div class="booking-image">
+                    <img
+                        src="../images/hero-event.jpg"
+                        alt="Elegant event venue"
                     >
-
                 </div>
 
-
-                <!-- Venue -->
-                <div class="form-group">
-
-                    <label for="venue">
-                        Venue
-                    </label>
-
-                    <input
-                        type="text"
-                        id="venue"
-                        placeholder="Enter event venue"
-                        required
-                    >
-
+                <div class="booking-tip">
+                    <span>✦</span>
+                    <div>
+                        <strong>Plan with confidence</strong>
+                        <p>
+                            Keep your event details, guests,
+                            venue and budget organized in one place.
+                        </p>
+                    </div>
                 </div>
 
-
-                <!-- Guest Count -->
-                <div class="form-group">
-
-                    <label for="guestCount">
-                        Number of Guests
-                    </label>
-
-                    <input
-                        type="number"
-                        id="guestCount"
-                        placeholder="Example: 100"
-                        min="1"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- Budget -->
-                <div class="form-group">
-
-                    <label for="budget">
-                        Estimated Budget (₹)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="budget"
-                        placeholder="Example: 50000"
-                        min="1"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- Submit -->
-                <button
-                    type="submit"
-                    class="btn-primary"
-                    style="width: 100%;"
-                >
-                    Submit Booking
-                </button>
-
-
-                <!-- Message -->
-                <p
-                    id="bookingMessage"
-                    class="auth-message"
-                ></p>
-
-            </form>
+            </div>
 
         </div>
 
+    </section>
+</main>
     </main>
 
 
