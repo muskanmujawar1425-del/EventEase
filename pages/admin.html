@@ -679,6 +679,9 @@
                             "change",
                             async function () {
 
+                                statusSelect.addEventListener("change", async function () {
+                                console.log("STATUS CHANGE FIRED");
+
                                 const newStatus =
                                     statusSelect.value;
 
