@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - EventEase</title>
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header>
+        <nav class="navbar">
+
+            <div class="logo">
+                EventEase
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#about">About</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#events">Events</a></li>
+            </ul>
+
+            <button id="logoutBtn" class="btn-primary">
+                Logout
+            </button>
+
+        </nav>
+    </header>
+
+
+    <!-- Dashboard -->
+    <main class="dashboard-container">
+
+        <section class="dashboard-header">
+
+            <div>
+                <p class="dashboard-label">Welcome Back</p>
+
+                <h1>
+                    Hello, <span id="userName">User</span>! 👋
+                </h1>
+
+                <p>
+                    Manage your events and bookings from your EventEase dashboard.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- Dashboard Cards -->
+        <section class="dashboard-cards">
+
+            <div class="dashboard-card">
+
+                <h3>🎉 Book an Event</h3>
+
+                <p>
+                    Plan your next event with EventEase.
+                </p>
+
+                <a href="booking.html" class="btn-primary">
+                    Book Now
+                </a>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <h3>📋 My Bookings</h3>
+
+                <p>
+                    View and manage your event bookings.
+                </p>
+
+                <a href="#bookings" class="btn-secondary">
+                    View Bookings
+                </a>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <h3>👤 My Profile</h3>
+
+                <p>
+                    <strong>Name:</strong>
+                    <span id="profileName">Loading...</span>
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    <span id="profilePhone">Loading...</span>
+                </p>
+
+                <p>
+                    <strong>Role:</strong>
+                    <span id="profileRole">Loading...</span>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Bookings -->
+        <section id="bookings" class="bookings-section">
+
+            <div class="section-heading">
+
+                <h2>My Bookings</h2>
+
+                <p>
+                    Your recent event bookings will appear here.
+                </p>
+
+            </div>
+
+            <div id="bookingsList">
+
+                <p class="loading-message">
+                    Loading bookings...
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+    <script src="../script.js"></script>
+
+
+    <!-- Dashboard Script -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            console.log("Dashboard loaded.");
+
+            const userName = document.getElementById("userName");
+            const profileName = document.getElementById("profileName");
+            const profilePhone = document.getElementById("profilePhone");
+            const profileRole = document.getElementById("profileRole");
+            const bookingsList = document.getElementById("bookingsList");
+            const logoutBtn = document.getElementById("logoutBtn");
+
+
+            // Get logged-in user
+            const { data: { user }, error: userError } =
+                await supabaseClient.auth.getUser();
+
+
+            // If no user is logged in
+            if (userError || !user) {
+
+                window.location.href = "login.html";
+
+                return;
+            }
+
+
+            console.log("Logged-in user:", user);
+
+
+            // Get user's profile
+            const { data: profile, error: profileError } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", user.id)
+                    .single();
+
+
+            if (profileError) {
+
+                console.error(profileError);
+
+                userName.textContent = "User";
+                profileName.textContent = "Not available";
+                profilePhone.textContent = "Not available";
+                profileRole.textContent = "Customer";
+
+            } else {
+
+                console.log("Profile:", profile);
+
+                userName.textContent =
+                    profile.full_name || "User";
+
+                profileName.textContent =
+                    profile.full_name || "Not available";
+
+                profilePhone.textContent =
+                    profile.phone || "Not available";
+
+                profileRole.textContent =
+                    profile.role || "Customer";
+            }
+
+
+            // Get user's bookings
+            const { data: bookings, error: bookingsError } =
+                await supabaseClient
+                    .from("bookings")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .order("created_at", { ascending: false });
+
+
+            if (bookingsError) {
+
+                console.error(bookingsError);
+
+                bookingsList.innerHTML =
+                    "<p>Unable to load bookings.</p>";
+
+            } else if (!bookings || bookings.length === 0) {
+
+                bookingsList.innerHTML =
+                    `
+                    <div class="empty-bookings">
+                        <h3>No bookings yet</h3>
+                        <p>You haven't booked any events yet.</p>
+
+                        <a href="booking.html" class="btn-primary">
+                            Book Your First Event
+                        </a>
+                    </div>
+                    `;
+
+            } else {
+
+                bookingsList.innerHTML = "";
+
+                bookings.forEach(function (booking) {
+
+                    const bookingCard =
+                        document.createElement("div");
+
+                    bookingCard.className =
+                        "booking-card";
+
+                    bookingCard.innerHTML =
+                        `
+                        <h3>${booking.event_type}</h3>
+
+                        <p>
+                            <strong>Date:</strong>
+                            ${booking.event_date}
+                        </p>
+
+                        <p>
+                            <strong>Venue:</strong>
+                            ${booking.venue || "Not specified"}
+                        </p>
+
+                        <p>
+                            <strong>Guests:</strong>
+                            ${booking.guest_count || "Not specified"}
+                        </p>
+
+                        <p>
+                            <strong>Budget:</strong>
+                            ₹${booking.budget || "Not specified"}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            ${booking.status}
+                        </p>
+                        `;
+
+                    bookingsList.appendChild(bookingCard);
+
+                });
+
+            }
+
+
+            // Logout
+            logoutBtn.addEventListener("click", async function () {
+
+                const { error } =
+                    await supabaseClient.auth.signOut();
+
+                if (error) {
+
+                    alert("Logout failed: " + error.message);
+
+                    return;
+                }
+
+                window.location.href = "login.html";
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>

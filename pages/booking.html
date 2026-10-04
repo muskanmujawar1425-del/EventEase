@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book an Event - EventEase</title>
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header>
+        <nav class="navbar">
+
+            <div class="logo">
+                EventEase
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+
+        </nav>
+    </header>
+
+
+    <!-- Booking Section -->
+    <main class="auth-container">
+
+        <div class="auth-box">
+
+            <h1>Book Your Event</h1>
+
+            <p class="auth-subtitle">
+                Tell us about your event and we'll take care of the rest.
+            </p>
+
+
+            <form id="bookingForm">
+
+                <!-- Event Type -->
+                <div class="form-group">
+
+                    <label for="eventType">
+                        Event Type
+                    </label>
+
+                    <select id="eventType" required>
+
+                        <option value="">
+                            Select Event Type
+                        </option>
+
+                        <option value="Wedding">
+                            Wedding
+                        </option>
+
+                        <option value="Birthday">
+                            Birthday Party
+                        </option>
+
+                        <option value="Corporate Event">
+                            Corporate Event
+                        </option>
+
+                        <option value="Engagement">
+                            Engagement
+                        </option>
+
+                        <option value="Conference">
+                            Conference
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Event Date -->
+                <div class="form-group">
+
+                    <label for="eventDate">
+                        Event Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="eventDate"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Venue -->
+                <div class="form-group">
+
+                    <label for="venue">
+                        Venue
+                    </label>
+
+                    <input
+                        type="text"
+                        id="venue"
+                        placeholder="Enter event venue"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Guest Count -->
+                <div class="form-group">
+
+                    <label for="guestCount">
+                        Number of Guests
+                    </label>
+
+                    <input
+                        type="number"
+                        id="guestCount"
+                        placeholder="Example: 100"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Budget -->
+                <div class="form-group">
+
+                    <label for="budget">
+                        Estimated Budget (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budget"
+                        placeholder="Example: 50000"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Submit -->
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    style="width: 100%;"
+                >
+                    Submit Booking
+                </button>
+
+
+                <!-- Message -->
+                <p
+                    id="bookingMessage"
+                    class="auth-message"
+                ></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+
+    <!-- Booking Script -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            console.log("Booking page loaded.");
+
+
+            const bookingForm =
+                document.getElementById("bookingForm");
+
+            const message =
+                document.getElementById("bookingMessage");
+
+
+            // Check logged-in user
+            const { data: { user }, error: userError } =
+                await supabaseClient.auth.getUser();
+
+
+            if (userError || !user) {
+
+                window.location.href = "login.html";
+
+                return;
+            }
+
+
+            console.log("Booking user:", user);
+
+
+            // Submit booking
+            bookingForm.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    message.textContent =
+                        "Submitting booking...";
+
+
+                    const eventType =
+                        document.getElementById(
+                            "eventType"
+                        ).value;
+
+                    const eventDate =
+                        document.getElementById(
+                            "eventDate"
+                        ).value;
+
+                    const venue =
+                        document.getElementById(
+                            "venue"
+                        ).value.trim();
+
+                    const guestCount =
+                        parseInt(
+                            document.getElementById(
+                                "guestCount"
+                            ).value
+                        );
+
+                    const budget =
+                        parseFloat(
+                            document.getElementById(
+                                "budget"
+                            ).value
+                        );
+
+
+                    // Insert booking into Supabase
+                    const { data, error } =
+                        await supabaseClient
+                            .from("bookings")
+                            .insert([
+                                {
+                                    user_id: user.id,
+                                    event_type: eventType,
+                                    event_date: eventDate,
+                                    venue: venue,
+                                    guest_count: guestCount,
+                                    budget: budget,
+                                    status: "pending"
+                                }
+                            ])
+                            .select();
+
+
+                    if (error) {
+
+                        console.error(
+                            "Booking error:",
+                            error
+                        );
+
+                        message.textContent =
+                            "Booking failed: " +
+                            error.message;
+
+                        return;
+                    }
+
+
+                    console.log(
+                        "Booking created:",
+                        data
+                    );
+
+
+                    message.textContent =
+                        "🎉 Booking submitted successfully!";
+
+
+                    bookingForm.reset();
+
+
+                    // Return to dashboard after 1.5 seconds
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    }, 1500);
+
+                }
+            );
+
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - EventEase</title>
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header>
+
+        <nav>
+
+            <div class="logo">
+                EventEase
+            </div>
+
+            <ul class="nav-links">
+
+                <li>
+                    <a href="../index.html">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="../index.html#about">
+                        About
+                    </a>
+                </li>
+
+                <li>
+                    <a href="../index.html#services">
+                        Services
+                    </a>
+                </li>
+
+                <li>
+                    <a href="../index.html#events">
+                        Events
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="nav-buttons">
+
+                <a href="register.html">
+                    Register
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Login Section -->
+
+    <main>
+
+        <section class="auth-section">
+
+            <div class="auth-container">
+
+                <div class="auth-header">
+
+                    <p class="welcome-text">
+                        Welcome Back
+                    </p>
+
+                    <h1>
+                        Login to EventEase
+                    </h1>
+
+                    <p>
+                        Sign in to manage your events and bookings.
+                    </p>
+
+                </div>
+
+
+                <!-- Login Form -->
+
+                <form id="loginForm">
+
+                    <div class="form-group">
+
+                        <label for="loginEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="loginPassword">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="login-options">
+
+                        <label class="remember-me">
+
+                            <input
+                                type="checkbox"
+                                id="rememberMe"
+                            >
+
+                            Remember me
+
+                        </label>
+
+                        <a href="#" id="forgotPassword">
+                            Forgot password?
+                        </a>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button auth-button"
+                    >
+                        Login
+                    </button>
+
+
+                    <p
+                        id="loginMessage"
+                        class="form-message"
+                    ></p>
+
+                </form>
+
+
+                <div class="auth-footer">
+
+                    <p>
+                        Don't have an account?
+
+                        <a href="register.html">
+                            Create an account
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            &copy; 2026 EventEase. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+    <script src="../script.js"></script>
+
+</body>
+
+</html>
