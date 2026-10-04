@@ -190,14 +190,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                message.textContent =
-                    "Login successful!";
+                message.textContent = "Login successful!";
 
-                setTimeout(function () {
+                    setTimeout(async function () {
 
-                    window.location.href = "dashboard.html";
+                        const {
+                       data: profile,
+                     error: profileError
+                  } = await supabaseClient
+                      .from("profiles")
+                     .select("role")
+                    .eq("id", result.data.user.id)
+                       .single();
 
-                }, 1000);
+                  if (profileError || !profile) {
+                       message.textContent =
+                        "Unable to determine your account role.";
+                      return;
+            }
+
+                  if (profile.role === "admin") {
+
+                      window.location.href = "admin.html";
+
+                } else {
+
+                       window.location.href = "dashboard.html";
+    
+          }
+
+             }, 1000); 
 
 
             } catch (error) {
