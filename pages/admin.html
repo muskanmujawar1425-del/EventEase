@@ -807,6 +807,113 @@
 
     </script>
 
+
+<script>
+(function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        const periodEl = document.getElementById("reportPeriod");
+        const dateEl = document.getElementById("reportDate");
+        const generateBtn = document.getElementById("generateReportBtn");
+        const exportBtn = document.getElementById("exportReportBtn");
+        const rangeEl = document.getElementById("reportRange");
+        const messageEl = document.getElementById("reportMessage");
+        const tbody = document.getElementById("reportTableBody");
+        const countEl = document.getElementById("reportBookingCount");
+        const guestsEl = document.getElementById("reportGuestCount");
+        const budgetEl = document.getElementById("reportBudgetTotal");
+        let reportRows = [];
+
+        const now = new Date();
+        const today = [now.getFullYear(), String(now.getMonth()+1).padStart(2,"0"), String(now.getDate()).padStart(2,"0")].join("-");
+        dateEl.value = today;
+
+        function esc(value) {
+            return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+                return ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"})[c];
+            });
+        }
+        function bounds(period, dateStr) {
+            const parts = dateStr.split("-").map(Number);
+            const y = parts[0], m = parts[1], d = parts[2];
+            let start, end;
+            if (period === "yearly") {
+                start = new Date(y, 0, 1); end = new Date(y + 1, 0, 1);
+            } else if (period === "weekly") {
+                const chosen = new Date(y, m - 1, d);
+                const day = (chosen.getDay() + 6) % 7;
+                start = new Date(y, m - 1, d - day); end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7);
+            } else {
+                start = new Date(y, m - 1, 1); end = new Date(y, m, 1);
+            }
+            function isoLocal(dt) { return [dt.getFullYear(), String(dt.getMonth()+1).padStart(2,"0"), String(dt.getDate()).padStart(2,"0")].join("-"); }
+            return { start: isoLocal(start), end: isoLocal(end), label: isoLocal(start) + " to " + isoLocal(new Date(end.getTime()-86400000)) };
+        }
+        function money(n) { return Number(n || 0).toLocaleString("en-IN", {maximumFractionDigits: 2}); }
+
+        async function loadReport() {
+            messageEl.textContent = "Loading report…";
+            tbody.innerHTML = '<tr><td colspan="8" style="padding:18px;text-align:center;">Loading…</td></tr>';
+            countEl.textContent = guestsEl.textContent = budgetEl.textContent = "—";
+            reportRows = [];
+            try {
+                if (!window.supabaseClient) throw new Error("Supabase client was not initialized. Check that ../supabase.js loads correctly.");
+                const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+                if (authError) throw authError;
+                if (!authData || !authData.user) throw new Error("Please log in with your admin account again.");
+                const { data: profile, error: profileError } = await supabaseClient.from("profiles").select("role").eq("id", authData.user.id).single();
+                if (profileError) throw new Error("Could not verify admin profile: " + profileError.message);
+                if (!profile || profile.role !== "admin") throw new Error("Admin access is required to view reports.");
+
+                const b = bounds(periodEl.value, dateEl.value || today);
+                rangeEl.textContent = "Event dates: " + b.label;
+                const { data: bookings, error: bookingsError } = await supabaseClient.from("bookings").select("*").gte("event_date", b.start).lt("event_date", b.end).order("event_date", {ascending:true});
+                if (bookingsError) throw new Error("Could not load bookings: " + bookingsError.message);
+                const { data: profiles, error: profilesError } = await supabaseClient.rpc("get_admin_customer_profiles");
+                if (profilesError) throw new Error("Bookings loaded, but customer details could not be loaded. RPC error: " + profilesError.message);
+                const profileMap = {};
+                (profiles || []).forEach(p => { profileMap[p.id] = p; });
+                reportRows = (bookings || []).map(bk => ({...bk, customer: profileMap[bk.user_id] || {}}));
+                countEl.textContent = reportRows.length;
+                guestsEl.textContent = reportRows.reduce((sum, r) => sum + Number(r.guest_count || 0), 0).toLocaleString("en-IN");
+                budgetEl.textContent = money(reportRows.reduce((sum, r) => sum + Number(r.budget || 0), 0));
+                if (!reportRows.length) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding:18px;text-align:center;">No bookings found for this event-date range.</td></tr>';
+                    messageEl.textContent = "Report loaded successfully. No bookings matched these event dates.";
+                    return;
+                }
+                tbody.innerHTML = reportRows.map(r => '<tr>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.customer.full_name || "Unknown customer") + '</td>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.customer.phone || "Not provided") + '</td>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.event_type) + '</td>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.event_date) + '</td>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.venue || "Not specified") + '</td>' +
+                    '<td style="padding:12px;text-align:right;border-bottom:1px solid #eee;">' + esc(r.guest_count || 0) + '</td>' +
+                    '<td style="padding:12px;text-align:right;border-bottom:1px solid #eee;">' + esc(money(r.budget)) + '</td>' +
+                    '<td style="padding:12px;border-bottom:1px solid #eee;">' + esc(r.status || "Unknown") + '</td></tr>').join("");
+                messageEl.textContent = "Loaded " + reportRows.length + " booking(s).";
+            } catch (err) {
+                console.error("Booking report error:", err);
+                tbody.innerHTML = '<tr><td colspan="8" style="padding:18px;text-align:center;color:#b91c1c;">' + esc(err.message || "Could not load report.") + '</td></tr>';
+                messageEl.textContent = err.message || "Could not load report. Open the browser console for details.";
+            }
+        }
+        generateBtn.addEventListener("click", loadReport);
+        periodEl.addEventListener("change", function () { if (dateEl.value) loadReport(); });
+        exportBtn.addEventListener("click", function () {
+            if (!reportRows.length) { messageEl.textContent = "There are no report rows to export. Generate a report with bookings first."; return; }
+            const columns = ["Customer","Phone","Event Type","Event Date","Venue","Guest Count","Budget","Status"];
+            const values = reportRows.map(r => [r.customer.full_name || "Unknown customer", r.customer.phone || "Not provided", r.event_type, r.event_date, r.venue, r.guest_count, r.budget, r.status]);
+            const csvCell = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+            const csv = [columns, ...values].map(row => row.map(csvCell).join(",")).join("\r\n");
+            const blob = new Blob(["\uFEFF", csv], {type:"text/csv;charset=utf-8;"});
+            const url = URL.createObjectURL(blob); const a = document.createElement("a");
+            a.href = url; a.download = "EventEase_Booking_Report.csv"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        });
+        loadReport();
+    });
+})();
+</script>
+
 </body>
 
 </html>
