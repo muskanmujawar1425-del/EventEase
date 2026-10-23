@@ -130,6 +130,55 @@
         </section>
 
 
+
+        <!-- Admin Reports -->
+        <section class="bookings-section" id="adminReports">
+            <div class="section-heading">
+                <h2>Booking Reports</h2>
+                <p>View customer bookings by week, month, or year. Reports use the event date.</p>
+            </div>
+            <div class="dashboard-card" style="margin-bottom:24px;">
+                <div style="display:flex;gap:16px;align-items:end;flex-wrap:wrap;">
+                    <div class="form-group" style="margin:0;min-width:180px;">
+                        <label for="reportPeriod">Report period</label>
+                        <select id="reportPeriod" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;min-width:180px;">
+                        <label for="reportDate">Choose a date in period</label>
+                        <input id="reportDate" type="date" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;" required>
+                    </div>
+                    <button id="generateReportBtn" class="btn-primary" type="button">Generate Report</button>
+                    <button id="exportReportBtn" class="btn-secondary" type="button">Export CSV</button>
+                </div>
+                <p id="reportRange" style="margin-top:16px;color:#687086;">Select a date and generate a report.</p>
+                <p id="reportMessage" role="status" style="margin-top:8px;"></p>
+            </div>
+            <div class="dashboard-cards" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+                <div class="dashboard-card"><h3>Bookings in period</h3><p id="reportBookingCount" style="font-size:1.8rem;font-weight:800;">—</p></div>
+                <div class="dashboard-card"><h3>Total guests</h3><p id="reportGuestCount" style="font-size:1.8rem;font-weight:800;">—</p></div>
+                <div class="dashboard-card"><h3>Combined budgets (₹)</h3><p id="reportBudgetTotal" style="font-size:1.8rem;font-weight:800;">—</p></div>
+            </div>
+            <div style="overflow-x:auto;background:white;border:1px solid #ececf5;border-radius:14px;padding:16px;">
+                <table style="width:100%;border-collapse:collapse;min-width:900px;">
+                    <thead><tr>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Customer</th>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Phone</th>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Event</th>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Event date</th>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Venue</th>
+                        <th style="text-align:right;padding:12px;border-bottom:1px solid #e5e7eb;">Guests</th>
+                        <th style="text-align:right;padding:12px;border-bottom:1px solid #e5e7eb;">Budget (₹)</th>
+                        <th style="text-align:left;padding:12px;border-bottom:1px solid #e5e7eb;">Status</th>
+                    </tr></thead>
+                    <tbody id="reportTableBody"><tr><td colspan="8" style="padding:18px;text-align:center;">Choose a date and generate a report.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Customer Bookings -->
         <section class="bookings-section">
 
