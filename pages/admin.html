@@ -856,7 +856,7 @@
             countEl.textContent = guestsEl.textContent = budgetEl.textContent = "—";
             reportRows = [];
             try {
-                if (!window.supabaseClient) throw new Error("Supabase client was not initialized. Check that ../supabase.js loads correctly.");
+                if (typeof supabaseClient === "undefined" || !supabaseClient) throw new Error("Supabase client was not initialized. Check that ../supabase.js loads correctly.");
                 const { data: authData, error: authError } = await supabaseClient.auth.getUser();
                 if (authError) throw authError;
                 if (!authData || !authData.user) throw new Error("Please log in with your admin account again.");
