@@ -810,7 +810,7 @@
 
 <script>
 (function () {
-    document.addEventListener("DOMContentLoaded", function () {
+        console.log("EventEase report script initialized");
         const periodEl = document.getElementById("reportPeriod");
         const dateEl = document.getElementById("reportDate");
         const generateBtn = document.getElementById("generateReportBtn");
@@ -910,7 +910,6 @@
             a.href = url; a.download = "EventEase_Booking_Report.csv"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
         });
         loadReport();
-    });
 })();
 </script>
 
